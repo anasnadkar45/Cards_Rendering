@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useId, useState } from 'react';
+import './App.css';
+import Navbar from './components/Navbar';
+import Filter from './components/Filter';
+import Cards from './components/cards';
+const filterData = [
+  {
+    id: 1,
+    title: "All",
+  },
+  {
+    id: 2,
+    title: "Development",
+  },
+  {
+    id: 3,
+    title: "Business",
+  },
+  {
+    id: 4,
+    title: "Design",
+  },
+  {
+    id: 5,
+    title: "Lifestyle",
+  },
+];
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [courses, setCourses] = useState("");
+  const [category , setCategory] = useState(filterData[0].title);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(apiUrl);
+        const output = await res.json();
+        setCourses(output.data);
+        console.log(output);
+      } catch (error) {
+        toast.error("something went wrong")
+      }
+    }
+    fetchData();
+  }, [])
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Navbar />
+        <Filter filterData={filterData} category={category} setCategory={setCategory} />
+        <Cards  courses={courses} category={category} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+const apiUrl = 'https://codehelp-apis.vercel.app/api/get-top-courses';
+export { filterData, apiUrl }
+export default App;
